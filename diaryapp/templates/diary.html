@@ -30,6 +30,7 @@
             box-shadow: none;
             padding: 5px;
             background-color: peachpuff;
+            width: 80%;
         }
 
         textarea :hover {
@@ -70,25 +71,18 @@
                 <div class="container">
                     <div class="row">
                         <div class="span6">
-                            <!-- <ul class="topmenu">
-                                <li><a href="#">Home</a> &#47;</li>
-                                <li><a href="#">Terms</a> &#47;</li>
-                                <li><a href="#">Privacy policy</a></li>
-                            </ul> -->
+                            <ul class="topmenu">
+                                <li><a href="#">Hello, {{request.session.name}}</a></li>
+                            </ul>
                         </div>
                         <div class="span6">
 
                             <ul class="social-network">
-                                <!-- <li><a href="#" data-placement="bottom" title="Facebook"><i
-                                            class="icon-circled icon-bglight icon-facebook"></i></a></li>
-                                <li><a href="#" data-placement="bottom" title="Twitter"><i
-                                            class="icon-circled icon-bglight icon-twitter"></i></a></li>
-                                <li><a href="#" data-placement="bottom" title="Linkedin"><i
-                                            class="icon-circled icon-linkedin icon-bglight"></i></a></li>
-                                <li><a href="#" data-placement="bottom" title="Pinterest"><i
-                                            class="icon-circled icon-pinterest  icon-bglight"></i></a></li>
-                                <li><a href="#" data-placement="bottom" title="Google +"><i
-                                            class="icon-circled icon-google-plus icon-bglight"></i></a></li> -->
+
+                                <li><a href="/logout/"
+                                        style="border: solid white 1px; color:white; padding:5px; border-radius:3px">LOGOUT</a>
+                                </li>
+
                             </ul>
 
                         </div>
@@ -158,30 +152,32 @@
 
                 <div class="post-image">
                     <div class="post-heading">
-                        <h3><a href="#">Example single post title here</a></h3>
+                        <h3><a href="#">Depict your thoughts</a></h3>
                     </div>
                 </div>
+                <form method="POST">
+                    {%csrf_token%}
+                    <input type="hidden" name="name" value={{request.session.id}} />
 
-                <p>
-                    <textarea rows="135" class="notes"></textarea>
-                </p>
+                    <p>
+                        <textarea rows="135" class="notes" name="diary"></textarea>
+                    </p>
 
-                <p>
-                    <form action="POST">
+                    <p>
                         <BLockquote>Congratulations! You have successfully added a new page to your diary. Now, Please
                             press the save button to save it.</BLockquote>
-                        <input type="submit" value="SAVE" />
-                    </form>
+                        <button type="submit">SAVE</button>
+                </form>
 
                 </p>
-                <div>
+                <!-- <div>
                     <ul class="meta-bottom">
                         <li><i class="icon-folder-open"></i><a href="#"> Blog</a></li>
                         <li><i class="icon-tags"></i> <a href="#">Web design</a>, <a href="#">Tutorial</a>
                         </li>
                     </ul>
                 </div>
-
+ -->
 
             </div>
 
@@ -191,23 +187,23 @@
     </section>
     <br><br>
     <footer>
+
         <div id="sub-footer">
             <div class="container">
                 <div class="row">
                     <div class="span6">
                         <div class="copyright">
-
+                            <p><span>&copy; Turning Pages. All right reserved</span></p>
                         </div>
 
                     </div>
 
-                    <div class="span6">
 
-                    </div>
                 </div>
             </div>
         </div>
     </footer>
+    </div>
     </div>
     <a href="#" class="scrollup"><i class="icon-angle-up icon-rounded icon-bglight icon-2x"></i></a>
 

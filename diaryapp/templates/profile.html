@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 {%load static%}
 
 <head>
@@ -18,7 +19,10 @@
     <link href='{%static "css/style.css"%}' rel="stylesheet">
 
     <!-- Theme skin -->
-    <link id="t-colors" href="/static/color/blue.css" rel="stylesheet" />
+    <link id="t-colors" href='{%static "color/default.css"%}' rel="stylesheet" />
+
+    <!-- css -->
+
 
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png" />
@@ -27,15 +31,11 @@
     <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png" />
     <link rel="shortcut icon" href="ico/favicon.png" />
 
-    <!-- =======================================================
-    Theme Name: Remember
-    Theme URL: https://bootstrapmade.com/remember-free-multipurpose-bootstrap-template/
-    Author: BootstrapMade.com
-    Author URL: https://bootstrapmade.com
-  ======================================================= -->
+
 </head>
 
 <body>
+
     <div id="wrapper">
         <!-- start header -->
         <header>
@@ -80,10 +80,10 @@
                                         <li>
                                             <a href="/diary/">Diary </a>
                                         </li>
-                                        <li class="active">
+                                        <li>
                                             <a href="/blog/">Blog </a>
                                         </li>
-                                        <li>
+                                        <li class="active">
                                             <a href="/profile/">Profile </a>
                                         </li>
 
@@ -104,107 +104,109 @@
                 <div class="row">
                     <div class="span4">
                         <div class="inner-heading">
-                            <h2>Blog</h2>
+                            <h2 style="color: rgb(0, 87, 0);">Profile</h2>
                         </div>
                     </div>
+
 
                 </div>
             </div>
         </section>
 
+
         <section id="content">
-            <div class="container" style="display:grid; justify-content: center;">
+            <div class="container">
+                <div class="row">
 
+                    <div class="span4">
 
-                {%for x,y in mq.items%}
-                <article>
-                    <div class="row">
-                        <br>
-                        <br>
-                        <div class="span8">
-                            <div class="post-slider">
-                                <div class="post-heading">
-                                    <h3><a href='https://www.mqmentalhealth.org{{y.href}}'>{{x}}</a></h3>
+                        <aside class="left-sidebar">
+                            <div class="widget">
+                                <div class="video-container">
+                                    <img src="../static/img/avatar.png"
+                                        style="border-radius: 150px; widows: 150px; height:150px"> </img>
                                 </div>
-                                <div class="clear"></div>
-                                <!-- start flexslider -->
-                                <div class="flexslider">
-                                    <ul class="slides">
-
-                                        <img src={{y.imgsrc}} alt="" />
-
-                                    </ul>
-                                </div>
-                                <!-- end flexslider -->
                             </div>
-                            <div class="meta-post">
-                                <a href="#" class="author"> {{y.author}}<br>
-                                </a>
-                                <a href="#" class="date">{{y.date}}</a>
-                            </div>
-                            <div class="post-entry">
+
+
+                            <div class="widget">
+
+                                <h5 class="widgetheading">{{request.session.name}}</h5>
                                 <p>
-                                    {{y.desc}}
+                                    {{request.session.gender}}
                                 </p>
-                                <a href='https://www.mqmentalhealth.org{{y.href}}' class="btn btn-color">Read more <i
-                                        class="icon-angle-right"></i></a>
-                            </div>
+                                <p>{{request.session.email}}</p>
 
-                        </div>
+                            </div>
+                        </aside>
                     </div>
-                </article>
-                {%endfor%}
 
-                {%for x,y in rethink.items%}
-                <article>
-                    <div class="row">
-                        <br>
-                        <br>
-                        <div class="span8">
-                            <div class="post-slider">
-                                <div class="post-heading">
-                                    <h3><a href={{y.href}}>{{x}}</a></h3>
-                                </div>
-                                <div class="clear"></div>
-                                <!-- start flexslider -->
-                                <div class="flexslider">
-                                    <ul class="slides">
+                    <div class="span8">
+                        <article>
+                            <div class="row">
 
-                                        <img src={{y.imgsrc}} alt="" />
 
-                                    </ul>
-                                </div>
-                                <!-- end flexslider -->
+                                <form method="POST" style="padding: 50px;">
+                                    <h5 class="widgetheading">Edit Profile</h5>
+                                    {%csrf_token%}
+                                    <div class="input-group">
+                                        <input class="input--style-3" type="text" placeholder="Name" name="name"
+                                            value={{request.session.name}}>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="rs-select2 js-select-simple select--no-search">
+                                            <select name="gender">
+                                                <option disabled="disabled" selected="selected"
+                                                    value={{request.session.gender}}>Gender</option>
+                                                <option>Male</option>
+                                                <option>Female</option>
+                                                <option>Other</option>
+                                            </select>
+                                            <div class="select-dropdown"></div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="input-group">
+                                        <input class="input--style-3" type="email" placeholder="Email" name="email"
+                                            value={{request.session.email}}>
+                                    </div>
+                                    <!-- <div class="input-group">
+                                        <input class="input--style-3" type="password" placeholder="Password"
+                                            name="password">
+                                    </div> -->
+
+                                    <div class="p-t-10">
+                                        <button class="btn btn--pill btn--green" type="submit">Change</button>
+                                    </div>
+
+
+                                </form>
+
                             </div>
-                            <div class="meta-post">
-                                <a href="#" class="author"> {{y.author}}<br>
-                                    <br></a>
-                                <a href="#" class="date">{{y.date}}</a>
-                            </div>
-                            <div class="post-entry">
-                                <p>
-                                    {{y.desc}}
-                                </p>
-                                <a href={{y.href}} class="btn btn-color" style="background-color: black;">Read more <i
-                                        class="icon-angle-right"></i></a>
-                            </div>
+                        </article>
 
-                        </div>
+                        <article>
+                            <div class="row">
+
+
+                            </div>
+                        </article>
+
+
+
+
                     </div>
-                </article>
-                {%endfor%}
-
-                <!-- <div id="pagination">
-                    <span class="all">Page 1 of 3</span>
-                    <span class="current">1</span>
-                    <a href="#" class="inactive">2</a>
-                    <a href="#" class="inactive">3</a>
-                </div> -->
+                </div>
             </div>
-    </div>
+        </section>
+
+
+
+
     </div>
     </section>
-
+    <br><br>
     <footer>
 
         <div id="sub-footer">

@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import UserModel
+from .models import UserModel, DiaryModel
 import bs4
 import requests
+from textblob import TextBlob, classifiers
 
 
 # Create your views here.
@@ -23,7 +24,7 @@ def signup(request):
                 email=e, name=n, password=p, gender=g)
             print('user.......', user)
             user.save()
-            return HttpResponse("successful")
+            return redirect(login)
 
         except:
             return HttpResponse("failed")
@@ -52,9 +53,10 @@ def login(request):
                         request.session['email'] = user.email
                         request.session['id'] = user.id
                         request.session['name'] = user.name
+                        request.session['gender'] = user.gender
                         return redirect('home')
                 else:
-                    return HttpResponse('successful')
+                    return render(request, 'login.html')
             except:
                 return HttpResponse("failed")
     else:
@@ -121,9 +123,36 @@ def blog(request):
 
 
 def diary(request):
-    return render(request, 'diary.html')
+    if request.method == "POST":
+        diary = request.POST.get("diary")
+        usern = request.POST.get("name")
+        print(diary)
+        sentimentp = TextBlob(diary).sentiment.polarity
+        if(sentimentp < 0):
+            sentimentp = -1
+        elif(sentimentp > 0):
+            sentimentp = 1
+        else:
+            sentimentp = 0
+
+        try:
+            usern = UserModel.objects.get(id=usern)
+            userdiary = DiaryModel.objects.create(
+                description=diary, polarity=sentimentp, user=usern)
+            userdiary.save()
+            return HttpResponse("successful")
+
+        except:
+            return HttpResponse("failed")
+
+    else:
+        return render(request, 'diary.html')
 
 
 def logout(request):
     request.session.flush()
     return redirect('landingpage')
+
+
+def profile(request):
+    return render(request, 'profile.html')
