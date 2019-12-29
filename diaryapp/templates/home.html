@@ -17,7 +17,7 @@
     <link href='{%static "css/style.css"%}' rel="stylesheet">
 
     <!-- Theme skin -->
-    <link id="t-colors" href='{%static "color/yellow.css"%}' rel="stylesheet" />
+    <link id="t-colors" href='{%static "color/blue.css"%}' rel="stylesheet" />
 
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png" />
@@ -113,7 +113,7 @@
                 <div class="row">
                     <div class="span4">
                         <div class="inner-heading">
-                            <h2>Home</h2>
+                            <h2 style="color:#02746e;">Home</h2>
                         </div>
                     </div>
                     <div class="span8">
@@ -128,62 +128,22 @@
 
                 <div class="row">
                     <div class="span12">
-                        <h4>Basic plain pricing box</h4>
+                        <h4>Quote for the day:</h4>
                     </div>
-                    <div class="span4">
+                    <div class="span12">
                         <div class="pricing-box-plain">
                             <div class="heading">
-                                <h4>Standard</h4>
-                                <span>$9 / Month</span>
+                                <h4>
+                                    <blockquote></blockquote> People often say that motivation doesn't last. Well,
+                                    neither does bathing - that's
+                                    why we recommend it daily.
+                                </h4>
+                                <span>Zig Ziglar</span>
                             </div>
-                            <div class="desc">
-                                <ul>
-                                    <li>For 1 Application</li>
-                                    <li>Free one year support</li>
-                                    <li>Unlimited disk spaces</li>
-                                </ul>
-                            </div>
-                            <div class="action">
-                                <a href="#" class="btn btn-inverse">Sign Up</a>
-                            </div>
+
                         </div>
                     </div>
-                    <div class="span4">
-                        <div class="pricing-box-plain">
-                            <div class="heading">
-                                <h4>Medium</h4>
-                                <span>$29 / Month</span>
-                            </div>
-                            <div class="desc">
-                                <ul>
-                                    <li>For 10 Applications</li>
-                                    <li>Free life time support</li>
-                                    <li>Unlimited disk spaces</li>
-                                </ul>
-                            </div>
-                            <div class="action">
-                                <a href="#" class="btn btn-inverse">Sign Up</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="span4">
-                        <div class="pricing-box-plain">
-                            <div class="heading">
-                                <h4>Elite</h4>
-                                <span>$59 / Month</span>
-                            </div>
-                            <div class="desc">
-                                <ul>
-                                    <li>For unlimited appliacations</li>
-                                    <li>Free life time support</li>
-                                    <li>Unlimited disk spaces</li>
-                                </ul>
-                            </div>
-                            <div class="action">
-                                <a href="#" class="btn btn-color">Sign Up</a>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
                 <!-- divider -->
@@ -197,73 +157,69 @@
 
                 <div class="row">
                     <div class="span12">
-                        <h4>Styled pricing box</h4>
+                        <h4>Recommendations for you</h4>
                     </div>
                     <div class="span4">
-                        <div class="pricing-box-wrap">
+                        <div class="pricing-box-wrap special">
                             <div class="pricing-heading">
-                                <h3>Very <strong>Basic</strong></h3>
+                                <h3><strong>Movies</strong></h3>
                             </div>
                             <div class="pricing-terms">
-                                <h6>&#36;15.00 / Month</h6>
+                                <!-- <h6>&#36;15.00 / Month</h6> -->
                             </div>
                             <div class="pricing-content">
                                 <ul>
-                                    <li><i class="icon-ok"></i> 100 applications</li>
-                                    <li><i class="icon-ok"></i> 24x7 support available</li>
-                                    <li><i class="icon-ok"></i> No hidden fees</li>
-                                    <li><i class="icon-ok"></i> Free 30-days trial</li>
-                                    <li><i class="icon-ok"></i> Stop anytime easily</li>
+                                    {% for x,y in movies.items%}
+                                    <li><i class="icon-play-circle"></i> {{x}}</li>
+                                    {%endfor%}
                                 </ul>
                             </div>
                             <div class="pricing-action">
-                                <a href="#" class="btn btn-medium btn-color"><i class="icon-bolt"></i> Sign Up</a>
+
                             </div>
                         </div>
                     </div>
                     <div class="span4">
                         <div class="pricing-box-wrap special">
                             <div class="pricing-heading">
-                                <h3>Good <strong>Choice</strong></h3>
+                                <h3> <strong>Podcasts</strong></h3>
                             </div>
                             <div class="pricing-terms">
-                                <h6>&#36;25.00 / Month</h6>
+                                <!-- <h6>&#36;25.00 / Month</h6> -->
                             </div>
 
                             <div class="pricing-content">
                                 <ul>
-                                    <li><i class="icon-ok"></i> 100 applications</li>
-                                    <li><i class="icon-ok"></i> 24x7 support available</li>
-                                    <li><i class="icon-ok"></i> No hidden fees</li>
-                                    <li><i class="icon-ok"></i> Free 30-days trial</li>
-                                    <li><i class="icon-ok"></i> Stop anytime easily</li>
+                                    {% for x,y in podcasts.items%}
+                                    <li><i class="icon-volume-up"></i> {{y}}</li>
+                                    {%endfor%}
                                 </ul>
                             </div>
                             <div class="pricing-action">
-                                <a href="#" class="btn btn-medium btn-color"><i class="icon-bolt"></i> Sign Up</a>
+                                <!-- <a href="#" class="btn btn-medium btn-color"><i class="icon-bolt"></i> Sign Up</a> -->
                             </div>
                         </div>
                     </div>
                     <div class="span4">
-                        <div class="pricing-box-wrap">
+                        <div class="pricing-box-wrap special">
                             <div class="pricing-heading">
-                                <h3>Just <strong>Happy</strong></h3>
+                                <h3> <strong>Books</strong></h3>
                             </div>
                             <div class="pricing-terms">
-                                <h6>&#36;35.00 / Month</h6>
+                                <!-- <h6>&#36;35.00 / Month</h6> -->
                             </div>
 
                             <div class="pricing-content">
                                 <ul>
-                                    <li><i class="icon-ok"></i> 100 applications</li>
-                                    <li><i class="icon-ok"></i> 24x7 support available</li>
-                                    <li><i class="icon-ok"></i> No hidden fees</li>
-                                    <li><i class="icon-ok"></i> Free 30-days trial</li>
-                                    <li><i class="icon-ok"></i> Stop anytime easily</li>
+                                    <ul>
+                                        {% for x,y in books.items%}
+                                        <li><i class="icon-book"></i> {{y}}</li>
+                                        {%endfor%}
+                                    </ul>
                                 </ul>
                             </div>
                             <div class="pricing-action">
-                                <a href="#" class="btn btn-medium btn-color"><i class="icon-bolt"></i> Sign Up</a>
+                                <!-- <a href="#" class="btn btn-medium btn-color"><i class="icon-bolt"></i> Sign Up</a> -->
                             </div>
                         </div>
                     </div>
@@ -279,35 +235,7 @@
 
         </section>
 
-        <footer>
 
-            <div id="sub-footer">
-                <div class="container">
-                    <div class="row">
-                        <div class="span6">
-                            <div class="copyright">
-                                <p><span>&copy; Remember Inc. All right reserved</span></p>
-                            </div>
-
-                        </div>
-
-                        <div class="span6">
-                            <div class="credits">
-                                <!--
-                  All the links in the footer should remain intact.
-                  You can delete the links only if you purchased the pro version.
-                  Licensing information: https://bootstrapmade.com/license/
-                  Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/buy/?theme=Remember
-                -->
-                                Created by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    </div>
-    <footer>
 
         <div id="sub-footer">
             <div class="container">
@@ -323,7 +251,7 @@
                 </div>
             </div>
         </div>
-    </footer>
+        </footer>
     </div>
     <a href="#" class="scrollup"><i class="icon-angle-up icon-rounded icon-bglight icon-2x"></i></a>
 

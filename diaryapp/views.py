@@ -4,9 +4,115 @@ from .models import UserModel, DiaryModel
 import bs4
 import requests
 from textblob import TextBlob, classifiers
+import itertools
 
 
 # Create your views here.
+
+# movie recommendation
+from bs4 import BeautifulSoup as SOUP
+import re
+import requests as HTTP
+
+# Main Function for scraping
+
+
+def main(emotion):
+
+    # IMDb Url for Drama genre of
+    # movie against emotion Sad
+    if(emotion == -1):
+        urlhere = 'http://www.imdb.com/search/title?genres=drama&title_type=feature&sort=moviemeter, asc'
+
+    # IMDb Url for Thriller genre of
+    # movie against emotion Enjoyment
+    elif(emotion == 1):
+        urlhere = 'http://www.imdb.com/search/title?genres=thriller&title_type=feature&sort=moviemeter, asc'
+
+    # IMDb Url for Film_noir genre of
+    # movie against emotion Surprise
+    elif(emotion == 0):
+        urlhere = 'http://www.imdb.com/search/title?genres=film_noir&title_type=feature&sort=moviemeter, asc'
+
+    # HTTP request to get the data of
+    # the whole page
+    page = requests.get(urlhere)
+    soup = bs4.BeautifulSoup(page.content, "html5lib")
+    # Parsing the data using
+    # BeautifulSoup
+    a = soup.findAll("div", {'class': 'lister-item mode-advanced'})
+    # Extract movie titles from the
+    # data using regex
+    movies = {}
+    for x in a:
+        inmovie = {}
+        imgsrc = (x.find('img'))['src']
+        movie = x.find('h3', {'class': 'lister-item-header'}
+                       ).find('a').get_text()
+        desc = (x.findAll('p'))[1].get_text()
+        inmovie['name'] = movie
+        inmovie['desc'] = desc
+        inmovie['imgsrc'] = imgsrc
+        movies[movie] = inmovie
+
+    return movies
+
+
+def mainmovie(emotion):
+    if(emotion == -1):
+        url = "https://www.buzzfeed.com/cieravelarde/harry-potter-is-truly-magical"
+        # IMDb Url for Thriller genre of
+        # movie against emotion Enjoyment
+    elif(emotion == 1):
+        url = "https://www.buzzfeed.com/lincolnthompson/31-of-the-most-heartwarming-books-youll-ever-read"
+    # IMDb Url for Film_noir genre of
+    # movie against emotion Surprise
+    elif(emotion == 0):
+        url = "https://www.buzzfeed.com/hilarywardle/fascinating-books-everyone-needs-to-own"
+
+    page = requests.get(url)
+    soup = bs4.BeautifulSoup(page.content, "html5lib")
+    div = soup.find_all('span', {'class': 'js-subbuzz__title-text'})
+
+    book = {}
+    count = 0
+    for x in div:
+        if count > 0:
+            name = x.get_text()
+            book[count] = name
+
+        count += 1
+
+    return book
+
+
+def mainpodcast(emotion):
+    if(emotion == -1):
+        url = "https://www.bustle.com/p/12-podcasts-to-help-anxiety-depression-whether-you-want-to-laugh-cry-find-a-way-to-unwind-15909570"
+        # IMDb Url for Thriller genre of
+        # movie against emotion Enjoyment
+    elif(emotion == 1):
+        url = "https://www.bustle.com/p/9-podcasts-for-positivity-that-will-brighten-up-your-day-80391"
+    # IMDb Url for Film_noir genre of
+    # movie against emotion Surprise
+    elif(emotion == 0):
+        url = "https://www.bustle.com/p/19-motivating-podcasts-to-help-you-start-2020-on-the-right-foot-19421406"
+    page = requests.get(url)
+    soup = bs4.BeautifulSoup(page.content, "html5lib")
+    div = soup.find_all('h3', {'class': 'jh'})
+
+    podcast = {}
+
+    count = 1
+    for x in div:
+        title = x.get_text()
+        title = title[3:]
+        podcast[count] = title
+        print(title)
+        count += 1
+
+    return podcast
+
 
 def landing_page(request):
     return render(request, "landing_page.html")
@@ -64,62 +170,89 @@ def login(request):
 
 
 def home(request):
-    return render(request, 'home.html')
+    # try:
+    if (DiaryModel.objects.filter(user=request.session['id'])).count() > 0:
+        diary = DiaryModel.objects.filter(
+            user=request.session['id']).order_by("-id")[0]
+        pol = diary.polarity
+    else:
+        pol = 0
+    a = main(pol)
+    b = mainmovie(pol)
+    c = mainpodcast(pol)
+
+    movie = dict(itertools.islice(a.items(), 6))
+    book = dict(itertools.islice(b.items(), 6))
+    podcast = dict(itertools.islice(c.items(), 6))
+
+    # return render(request, 'home.html', out)
+
+    # return HttpResponse(c)
+    return render(request, 'home.html', {'movies': movie, 'podcasts': podcast, 'books': book})
+
+    # except:
+    # return HttpResponse('failed')
+
+    #  return render(request, 'home.html')
 
 
 def blog(request):
     # mental health news and blog : mq
-    url1 = 'https://www.mqmentalhealth.org/news-blog'
-    page = requests.get(url1)
-    soup1 = bs4.BeautifulSoup(page.content, 'html5lib')
-    article = soup1.findAll('article')
+    try:
+        url1 = 'https://www.mqmentalhealth.org/news-blog'
+        page = requests.get(url1)
+        soup1 = bs4.BeautifulSoup(page.content, 'html5lib')
+        article = soup1.findAll('article')
 
-    dict1 = {}
+        dict1 = {}
 
-    for x in article:
-        dict = {}
-        print()
-        try:
-            a = x.find('header').get_text()
-            dict['href'] = (x.find('a'))['href']
-            dict['imgsrc'] = (x.find('img'))['src']
-            dict['title'] = x.find('header').get_text()
-            dict['author'] = x.find('footer').find('a').get_text()
-            dict['desc'] = x.find('p').get_text()
-            dict['date'] = x.find('time').get_text()
-
+        for x in article:
+            dict = {}
             print()
-            print(dict)
-            dict1[a] = (dict)
-        except:
-            pass
+            try:
+                a = x.find('header').get_text()
+                dict['href'] = (x.find('a'))['href']
+                dict['imgsrc'] = (x.find('img'))['src']
+                dict['title'] = x.find('header').get_text()
+                dict['author'] = x.find('footer').find('a').get_text()
+                dict['desc'] = x.find('p').get_text()
+                dict['date'] = x.find('time').get_text()
 
-    # story blogs about mental health
-    url1 = 'https://www.blurtitout.org/blog/'
-    page = requests.get(url1)
-    soup1 = bs4.BeautifulSoup(page.content, 'html5lib')
-    article = soup1.findAll("article")
+                print()
+                print(dict)
+                dict1[a] = (dict)
+            except:
+                pass
 
-    dict2 = {}
-    for x in article:
-        dict = {}
-        print()
-        try:
-            a = x.find('header').get_text()
-            dict['href'] = (x.find('a'))['href']
-            dict['imgsrc'] = (x.find('img'))['src']
-            dict['title'] = x.find('h1').get_text()
-            dict['author'] = "Blurt Team"
-            dict['desc'] = x.find('section').find('p').string
-            dict['date'] = x.find('time').get_text()
+        # story blogs about mental health
+        url1 = 'https://www.blurtitout.org/blog/'
+        page = requests.get(url1)
+        soup1 = bs4.BeautifulSoup(page.content, 'html5lib')
+        article = soup1.findAll("article")
 
+        dict2 = {}
+        for x in article:
+            dict = {}
             print()
-            print(dict)
-            dict2[a] = (dict)
-        except:
-            pass
+            try:
+                a = x.find('header').get_text()
+                dict['href'] = (x.find('a'))['href']
+                dict['imgsrc'] = (x.find('img'))['src']
+                dict['title'] = x.find('h1').get_text()
+                dict['author'] = "Blurt Team"
+                dict['desc'] = x.find('section').find('p').string
+                dict['date'] = x.find('time').get_text()
 
-    return render(request, 'blog.html', {'mq': dict1, 'rethink': dict2})
+                print()
+                print(dict)
+                dict2[a] = (dict)
+            except:
+                pass
+
+        return render(request, 'blog.html', {'mq': dict1, 'rethink': dict2})
+
+    except:
+        return HttpResponse("This requires internet connection. Please make sure you are connected to internet")
 
 
 def diary(request):
@@ -140,8 +273,7 @@ def diary(request):
             userdiary = DiaryModel.objects.create(
                 description=diary, polarity=sentimentp, user=usern)
             userdiary.save()
-            return HttpResponse("successful")
-
+            return redirect("home")
         except:
             return HttpResponse("failed")
 
