@@ -5,6 +5,8 @@ import bs4
 import requests
 from textblob import TextBlob, classifiers
 import itertools
+import time
+import random
 
 
 # Create your views here.
@@ -36,26 +38,36 @@ def main(emotion):
 
     # HTTP request to get the data of
     # the whole page
-    page = requests.get(urlhere)
-    soup = bs4.BeautifulSoup(page.content, "html5lib")
-    # Parsing the data using
-    # BeautifulSoup
-    a = soup.findAll("div", {'class': 'lister-item mode-advanced'})
-    # Extract movie titles from the
-    # data using regex
-    movies = {}
-    for x in a:
-        inmovie = {}
-        imgsrc = (x.find('img'))['src']
-        movie = x.find('h3', {'class': 'lister-item-header'}
-                       ).find('a').get_text()
-        desc = (x.findAll('p'))[1].get_text()
-        inmovie['name'] = movie
-        inmovie['desc'] = desc
-        inmovie['imgsrc'] = imgsrc
-        movies[movie] = inmovie
+    try:
+        page = requests.get(urlhere)
+        soup = bs4.BeautifulSoup(page.content, "html5lib")
+        # Parsing the data using
+        # BeautifulSoup
+        a = soup.findAll("div", {'class': 'lister-item mode-advanced'})
+        # Extract movie titles from the
+        # data using regex
+        movies = {}
+        for x in a:
+            inmovie = {}
+            # imgsrc = (x.find('img'))['src']
+            movie = x.find('h3', {'class': 'lister-item-header'}
+                           ).find('a').get_text()
+            desc = (x.findAll('p'))[1].get_text()
+            inmovie['name'] = movie
+            inmovie['desc'] = desc
+            # inmovie['imgsrc'] = imgsrc
+            movies[movie] = inmovie
 
-    return movies
+        keys = list(movies.keys())
+        random.shuffle(keys)
+        moviesh = {}
+
+        for key in keys:
+            moviesh.update({key: movies[key]})
+
+        return moviesh
+    except:
+        pass
 
 
 def mainmovie(emotion):
@@ -83,7 +95,14 @@ def mainmovie(emotion):
 
         count += 1
 
-    return book
+    keys = list(book.keys())
+    random.shuffle(keys)
+    booksh = {}
+
+    for key in keys:
+        booksh.update({key: book[key]})
+
+    return booksh
 
 
 def mainpodcast(emotion):
@@ -110,7 +129,13 @@ def mainpodcast(emotion):
         podcast[count] = title
         print(title)
         count += 1
+        
+    keys = list(book.keys())
+        random.shuffle(keys)
+        booksh = {}
 
+        for key in keys:
+            booksh.update({key: book[key]})
     return podcast
 
 
@@ -287,4 +312,24 @@ def logout(request):
 
 
 def profile(request):
-    return render(request, 'profile.html')
+    if request.method == "POST":
+        n = request.POST.get("name")
+        e = request.POST.get("email")
+        g = request.POST.get("gender")
+        try:
+            if g != 'Male' or g != 'Female':
+                g = request.session["gender"]
+
+            print(n, e, g)
+            user = UserModel.objects.filter(id=request.session['id'])
+
+            print('user.......', user)
+            user.update(name=n, email=e, gender=g)
+            time.sleep(1)
+            HttpResponse('Please login to see changes')
+            time.sleep(2)
+            return render(request, 'login.html')
+        except:
+            return HttpResponse("failed")
+    else:
+        return render(request, 'profile.html')
