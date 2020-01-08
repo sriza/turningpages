@@ -8,6 +8,7 @@ import itertools
 import time
 import random
 
+from sentiment import predict
 
 # Create your views here.
 
@@ -105,7 +106,8 @@ def mainmovie(emotion):
     return booksh
 
 
-def mainpodcast(emotion):
+def mainpodcasts(emotion):
+    print("inside the function def")
     if(emotion == -1):
         url = "https://www.bustle.com/p/12-podcasts-to-help-anxiety-depression-whether-you-want-to-laugh-cry-find-a-way-to-unwind-15909570"
         # IMDb Url for Thriller genre of
@@ -118,24 +120,26 @@ def mainpodcast(emotion):
         url = "https://www.bustle.com/p/19-motivating-podcasts-to-help-you-start-2020-on-the-right-foot-19421406"
     page = requests.get(url)
     soup = bs4.BeautifulSoup(page.content, "html5lib")
-    div = soup.find_all('h3', {'class': 'jh'})
+    div = soup.find_all('h3', {'class': 'jf'})
+    print(div)
 
     podcast = {}
-
     count = 1
-    for x in div:
-        title = x.get_text()
+    for title in div:
+        #     title=x.find('h3',{'class':'jh'})
+        title = title.get_text()
         title = title[3:]
         podcast[count] = title
-        print(title)
         count += 1
-        
-    keys = list(book.keys())
-        random.shuffle(keys)
-        booksh = {}
+    print(podcast)
 
-        for key in keys:
-            booksh.update({key: book[key]})
+    keys = list(podcast.keys())
+    random.shuffle(keys)
+    podcasts = {}
+
+    for key in keys:
+        podcasts.update({key: podcast[key]})
+
     return podcast
 
 
@@ -204,7 +208,7 @@ def home(request):
         pol = 0
     a = main(pol)
     b = mainmovie(pol)
-    c = mainpodcast(pol)
+    c = mainpodcasts(pol)
 
     movie = dict(itertools.islice(a.items(), 6))
     book = dict(itertools.islice(b.items(), 6))
@@ -285,6 +289,13 @@ def diary(request):
         diary = request.POST.get("diary")
         usern = request.POST.get("name")
         print(diary)
+
+        try:
+            print('predict----->', predict(diary))
+            sentim = predict(diary)
+
+        except:
+            pass
         sentimentp = TextBlob(diary).sentiment.polarity
         if(sentimentp < 0):
             sentimentp = -1
