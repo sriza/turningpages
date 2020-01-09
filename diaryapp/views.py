@@ -5,6 +5,7 @@ import bs4
 import requests
 from textblob import TextBlob, classifiers
 import itertools
+import datetime 
 
 
 # Create your views here.
@@ -37,7 +38,7 @@ def main(emotion):
     # HTTP request to get the data of
     # the whole page
     page = requests.get(urlhere)
-    soup = bs4.BeautifulSoup(page.content, "html5lib")
+    soup = bs4.BeautifulSoup(page.content, "html.parser")
     # Parsing the data using
     # BeautifulSoup
     a = soup.findAll("div", {'class': 'lister-item mode-advanced'})
@@ -71,7 +72,7 @@ def mainmovie(emotion):
         url = "https://www.buzzfeed.com/hilarywardle/fascinating-books-everyone-needs-to-own"
 
     page = requests.get(url)
-    soup = bs4.BeautifulSoup(page.content, "html5lib")
+    soup = bs4.BeautifulSoup(page.content, "html.parser")
     div = soup.find_all('span', {'class': 'js-subbuzz__title-text'})
 
     book = {}
@@ -98,7 +99,7 @@ def mainpodcast(emotion):
     elif(emotion == 0):
         url = "https://www.bustle.com/p/19-motivating-podcasts-to-help-you-start-2020-on-the-right-foot-19421406"
     page = requests.get(url)
-    soup = bs4.BeautifulSoup(page.content, "html5lib")
+    soup = bs4.BeautifulSoup(page.content, "html.parser")
     div = soup.find_all('h3', {'class': 'jh'})
 
     podcast = {}
@@ -201,7 +202,7 @@ def blog(request):
     try:
         url1 = 'https://www.mqmentalhealth.org/news-blog'
         page = requests.get(url1)
-        soup1 = bs4.BeautifulSoup(page.content, 'html5lib')
+        soup1 = bs4.BeautifulSoup(page.content, 'html.parser')
         article = soup1.findAll('article')
 
         dict1 = {}
@@ -227,7 +228,7 @@ def blog(request):
         # story blogs about mental health
         url1 = 'https://www.blurtitout.org/blog/'
         page = requests.get(url1)
-        soup1 = bs4.BeautifulSoup(page.content, 'html5lib')
+        soup1 = bs4.BeautifulSoup(page.content, 'html.parser')
         article = soup1.findAll("article")
 
         dict2 = {}
@@ -257,6 +258,7 @@ def blog(request):
 
 def diary(request):
     if request.method == "POST":
+        print("i am inside the diary function")
         diary = request.POST.get("diary")
         usern = request.POST.get("name")
         print(diary)
@@ -277,9 +279,12 @@ def diary(request):
         except:
             return HttpResponse("failed")
 
+
     else:
         return render(request, 'diary.html')
 
+    # def __str__(self):
+    #     return self.name
 
 def logout(request):
     request.session.flush()
@@ -287,4 +292,63 @@ def logout(request):
 
 
 def profile(request):
-    return render(request, 'profile.html')
+    posts=DiaryModel.objects.filter(user=request.session['id'])
+    neutral=0
+    positive=0
+    negative=0
+    senti={}
+    for x in posts:
+        if x.polarity==0:
+            neutral=neutral+1
+        elif x.polarity==1:
+            positive=positive+1
+        else:
+            negative=negative+1
+    senti['positive']=positive
+    senti['neutral']=neutral
+    senti['negative']=negative
+   
+
+
+
+    return render(request, 'profile.html',{'sentis':senti})
+
+def view(request):
+    if request.method == "POST":
+        print("Inside post of view:")
+        date = request.POST.get("date")  
+        print("date------------>",date)  
+
+
+       
+        alldiary=DiaryModel.objects.filter(user=request.session['id'])
+
+        
+        dict={}
+        count=0
+        for d in alldiary:
+            x=d.timestamp
+            print(x)
+            print(type(x))
+            timestamp=datetime.datetime.date(x)
+            print(timestamp)
+            newformat = timestamp.strftime('%m/%d/%Y')
+            print (newformat)
+            
+            if str(newformat)==str(date):
+                print("compared")
+                print(d.timestamp)
+                print(d.description)
+                dict[d.timestamp]=d.description
+                print(dict)
+                
+            else:
+                HttpResponse("had no entry")
+
+    
+        return render(request,'diary.html',{'descriptions':dict})
+                 
+                   
+
+    else:
+        return render(request,'diary.html')

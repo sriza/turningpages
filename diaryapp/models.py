@@ -16,6 +16,11 @@ class DiaryModel(models.Model):
     description = models.TextField()
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     polarity = models.IntegerField()
+   
+
+
+    def __str__(self):
+        return self.description
 
 
 class SentimentcatModel(models.Model):
