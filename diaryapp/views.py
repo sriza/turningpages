@@ -83,28 +83,31 @@ def mainmovie(emotion):
     # movie against emotion Surprise
     elif(emotion == 0):
         url = "https://www.buzzfeed.com/hilarywardle/fascinating-books-everyone-needs-to-own"
+    try:
+        page = requests.get(url)
+        soup = bs4.BeautifulSoup(page.content, "html.parser")
+        div = soup.find_all('span', {'class': 'js-subbuzz__title-text'})
 
-    page = requests.get(url)
-    soup = bs4.BeautifulSoup(page.content, "html.parser")
-    div = soup.find_all('span', {'class': 'js-subbuzz__title-text'})
+        book = {}
+        count = 0
+        for x in div:
+            if count > 0:
+                name = x.get_text()
+                book[count] = name
 
-    book = {}
-    count = 0
-    for x in div:
-        if count > 0:
-            name = x.get_text()
-            book[count] = name
+            count += 1
 
-        count += 1
+        keys = list(book.keys())
+        random.shuffle(keys)
+        booksh = {}
 
-    keys = list(book.keys())
-    random.shuffle(keys)
-    booksh = {}
+        for key in keys:
+            booksh.update({key: book[key]})
 
-    for key in keys:
-        booksh.update({key: book[key]})
-
-    return booksh
+        return booksh
+    
+    except:
+        pass
 
 
 def mainpodcasts(emotion):
@@ -119,29 +122,32 @@ def mainpodcasts(emotion):
     # movie against emotion Surprise
     elif(emotion == 0):
         url = "https://www.bustle.com/p/19-motivating-podcasts-to-help-you-start-2020-on-the-right-foot-19421406"
-    page = requests.get(url)
-    soup = bs4.BeautifulSoup(page.content, "html5lib")
-    div = soup.find_all('h3', {'class': 'jf'})
-    print(div)
+    try:
+        page = requests.get(url)
+        soup = bs4.BeautifulSoup(page.content, "html5lib")
+        div = soup.find_all('h3', {'class': 'jf'})
+        print(div)
 
-    podcast = {}
-    count = 1
-    for title in div:
-        #     title=x.find('h3',{'class':'jh'})
-        title = title.get_text()
-        title = title[3:]
-        podcast[count] = title
-        count += 1
-    print(podcast)
+        podcast = {}
+        count = 1
+        for title in div:
+            #     title=x.find('h3',{'class':'jh'})
+            title = title.get_text()
+            title = title[3:]
+            podcast[count] = title
+            count += 1
+        print(podcast)
 
-    keys = list(podcast.keys())
-    random.shuffle(keys)
-    podcasts = {}
+        keys = list(podcast.keys())
+        random.shuffle(keys)
+        podcasts = {}
 
-    for key in keys:
-        podcasts.update({key: podcast[key]})
+        for key in keys:
+            podcasts.update({key: podcast[key]})
 
-    return podcast
+        return podcast
+    except:
+        pass
 
 
 def landing_page(request):
@@ -209,10 +215,12 @@ def home(request):
     a = main(pol)
     b = mainmovie(pol)
     c = mainpodcasts(pol)
-
-    movie = dict(itertools.islice(a.items(), 6))
-    book = dict(itertools.islice(b.items(), 6))
-    podcast = dict(itertools.islice(c.items(), 6))
+    try:
+        movie = dict(itertools.islice(a.items(), 6))
+        book = dict(itertools.islice(b.items(), 6))
+        podcast = dict(itertools.islice(c.items(), 6))
+    except:
+        pass
 
     # return render(request, 'home.html', out)
 
