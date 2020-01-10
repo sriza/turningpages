@@ -5,11 +5,12 @@ import bs4
 import requests
 from textblob import TextBlob, classifiers
 import itertools
-import time
-import random
+
+import datetime
 
 from sentiment import predict
 
+import random
 # Create your views here.
 
 # movie recommendation
@@ -25,20 +26,21 @@ def main(emotion):
     # IMDb Url for Drama genre of
     # movie against emotion Sad
     if(emotion == -1):
-        urlhere = 'http://www.imdb.com/search/title?genres=drama&title_type=feature&sort=moviemeter, asc'
+        urlhere = 'https://www.imdb.com/search/title/?genres=drama&title_type=feature&sort=moviemeter, asc'
 
     # IMDb Url for Thriller genre of
     # movie against emotion Enjoyment
     elif(emotion == 1):
-        urlhere = 'http://www.imdb.com/search/title?genres=thriller&title_type=feature&sort=moviemeter, asc'
+        urlhere = 'https://www.imdb.com/search/title/?genres=thriller&title_type=feature&sort=moviemeter, asc'
 
     # IMDb Url for Film_noir genre of
     # movie against emotion Surprise
     elif(emotion == 0):
-        urlhere = 'http://www.imdb.com/search/title?genres=film_noir&title_type=feature&sort=moviemeter, asc'
+        urlhere = 'https://www.imdb.com/search/title/?genres=film_noir&title_type=feature&sort=moviemeter, asc'
 
     # HTTP request to get the data of
     # the whole page
+
     try:
         page = requests.get(urlhere)
         soup = bs4.BeautifulSoup(page.content, "html5lib")
@@ -55,8 +57,7 @@ def main(emotion):
                            ).find('a').get_text()
             desc = (x.findAll('p'))[1].get_text()
             inmovie['name'] = movie
-            inmovie['desc'] = desc
-            # inmovie['imgsrc'] = imgsrc
+
             movies[movie] = inmovie
 
         keys = list(movies.keys())
@@ -84,7 +85,7 @@ def mainmovie(emotion):
         url = "https://www.buzzfeed.com/hilarywardle/fascinating-books-everyone-needs-to-own"
 
     page = requests.get(url)
-    soup = bs4.BeautifulSoup(page.content, "html5lib")
+    soup = bs4.BeautifulSoup(page.content, "html.parser")
     div = soup.find_all('span', {'class': 'js-subbuzz__title-text'})
 
     book = {}
@@ -162,7 +163,7 @@ def signup(request):
             return redirect(login)
 
         except:
-            return HttpResponse("failed")
+            return render(request, 'signup.html', {'message': 'Either something went wrong or you did not enter all the required fields.'})
     else:
         return render(request, 'signup.html')
 
@@ -174,8 +175,7 @@ def login(request):
         p = request.POST.get("password")
 
         if e == '' or p == '':
-            HttpResponse('Please enter your email and password')
-            return redirect('login')
+            return render(request, 'login.html', {'message': "Please enter email or password"})
 
         else:
 
@@ -191,9 +191,9 @@ def login(request):
                         request.session['gender'] = user.gender
                         return redirect('home')
                 else:
-                    return render(request, 'login.html')
+                    return render(request, 'login.html', {'message': "Your email or password might be wrong."})
             except:
-                return HttpResponse("failed")
+                return render(request, 'login.html', {'message': "Something went wrong. Please try to login again!"})
     else:
         return render(request, 'login.html')
 
@@ -230,7 +230,7 @@ def blog(request):
     try:
         url1 = 'https://www.mqmentalhealth.org/news-blog'
         page = requests.get(url1)
-        soup1 = bs4.BeautifulSoup(page.content, 'html5lib')
+        soup1 = bs4.BeautifulSoup(page.content, 'html.parser')
         article = soup1.findAll('article')
 
         dict1 = {}
@@ -256,7 +256,7 @@ def blog(request):
         # story blogs about mental health
         url1 = 'https://www.blurtitout.org/blog/'
         page = requests.get(url1)
-        soup1 = bs4.BeautifulSoup(page.content, 'html5lib')
+        soup1 = bs4.BeautifulSoup(page.content, 'html.parser')
         article = soup1.findAll("article")
 
         dict2 = {}
@@ -286,17 +286,21 @@ def blog(request):
 
 def diary(request):
     if request.method == "POST":
+        print("i am inside the diary function")
         diary = request.POST.get("diary")
         usern = request.POST.get("name")
         print(diary)
 
+        pol = TextBlob(diary).sentiment.polarity
+
         try:
             print('predict----->', predict(diary))
             sentim = predict(diary)
+            sentimentp = (sentim+pol)/2
 
         except:
-            pass
-        sentimentp = TextBlob(diary).sentiment.polarity
+            sentimentp = pol
+
         if(sentimentp < 0):
             sentimentp = -1
         elif(sentimentp > 0):
@@ -314,7 +318,11 @@ def diary(request):
             return HttpResponse("failed")
 
     else:
-        return render(request, 'diary.html')
+        description = 'c'
+        return render(request, 'diary.html', {'description': description})
+
+    # def __str__(self):
+    #     return self.name
 
 
 def logout(request):
@@ -336,11 +344,56 @@ def profile(request):
 
             print('user.......', user)
             user.update(name=n, email=e, gender=g)
-            time.sleep(1)
-            HttpResponse('Please login to see changes')
-            time.sleep(2)
-            return render(request, 'login.html')
+            return redirect(login)
         except:
-            return HttpResponse("failed")
+            return render(request, 'profile.html', {'message': 'Something went wrong. Could not edit the profile.'})
     else:
-        return render(request, 'profile.html')
+        posts = DiaryModel.objects.filter(user=request.session['id'])
+        neutral = 0
+        positive = 0
+        negative = 0
+        senti = {}
+        for x in posts:
+            if x.polarity == 0:
+                neutral = neutral+1
+            elif x.polarity == 1:
+                positive = positive+1
+            else:
+                negative = negative+1
+
+        return render(request, 'profile.html', {'negative': negative, 'positive': positive, 'neutral': neutral})
+
+
+def view(request):
+    if request.method == "POST":
+        print("Inside post of view:")
+        date = request.POST.get("date")
+        print("date------------>", date)
+
+        alldiary = DiaryModel.objects.filter(user=request.session['id'])
+
+        dict = {}
+        count = 0
+        for d in alldiary:
+            x = d.timestamp
+            print(x)
+            print(type(x))
+            timestamp = datetime.datetime.date(x)
+            print(timestamp)
+            newformat = timestamp.strftime('%m/%d/%Y')
+            print(newformat)
+
+            if str(newformat) == str(date):
+                print("compared")
+                print(d.timestamp)
+                print(d.description)
+                dict[d.timestamp] = d.description
+                print(dict)
+
+        if dict == {}:
+            dict[date] = "Have no content to display"
+
+        return render(request, 'diary.html', {'descriptions': dict})
+
+    else:
+        return render(request, 'diary.html')

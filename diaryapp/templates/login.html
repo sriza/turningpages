@@ -98,6 +98,8 @@
                     <h2 class="title">LOGIN Here!</h2>
                     <form method="POST">
                         {%csrf_token%}
+                        <p style="color: red;">{{message}}</p>
+                        <br><br>
                         <div class="input-group">
                             <input class="input--style-3" type="email" placeholder="Email" name="email">
                         </div>
