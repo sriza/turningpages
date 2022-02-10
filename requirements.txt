@@ -1,5 +1,5 @@
 beautifulsoup4==4.8.2
-Django==2.2
+Django==2.2.27
 nltk==3.4.5
 numpy==1.18.0
 Pillow==6.2.1
